@@ -30,7 +30,8 @@ class FinaleModule extends Module {
 
         if(!parent::install() ||
         !Configuration::updateValue('ANNEES', '1993') ||
-        !Configuration::updateValeur('MOIS', 'decembre'))
+        !Configuration::updateValeur('MOIS', 'decembre') ||
+        !Configuration::updateValue('JOUR', 15))
         {
             return false;
         }
@@ -42,7 +43,8 @@ class FinaleModule extends Module {
     {
         if(!parent::uninstall() ||
         !Configuration::deleteByName('ANNEES') ||
-        !Configuration::deleteByName('MOIS'))
+        !Configuration::deleteByName('MOIS') ||
+        !Configuration::deleteByName('JOUR'))
         {
             return false;
         }
@@ -74,6 +76,12 @@ class FinaleModule extends Module {
                         'label' => 'mois',
                         'name' => 'MOIS',
                         'required' => true
+                    ],
+                    [
+                        'type' => 'text',
+                        'label' => 'jour',
+                        'name' => 'JOUR',
+                        'required' => true
                     ]
                     ],
                     'submit' => [
@@ -91,6 +99,7 @@ class FinaleModule extends Module {
             // $helper->fields_value recupère la value du champ.
             $helper->fields_value['ANNEES'] = Configuration::get('ANNEES');
             $helper->fields_value['MOIS'] = Configuration::get('MOIS');
+            $helper->fields_value['JOUR'] = Configuration::get('JOUR');
             
             
             return $helper->generateForm($fieldsForm);
@@ -106,6 +115,7 @@ class FinaleModule extends Module {
 
             $annees = Tools::getValue('ANNEES');
             $mois = Tools::getValue('MOIS');
+            $jour = Tools::getValue('JOUR');
 
             $errors =  false;
 
@@ -121,10 +131,17 @@ class FinaleModule extends Module {
                 $errors = true;
             }
 
+            if(empty($jour))
+            {
+                $this->displayError("le jour  ne doit pas être vide");
+                $errors = true;
+            }
+
             if(count($errors) < 1)
             {
                 Configuration::updateValue('ANNEES', $annees);
                 Configuration::updateValue('MOIS', $mois);
+                Configuration::uodateValue('JOUR', $jour);
 
                 $this->displayConfirmation('Les données ont été modifiés avec success');
             }
